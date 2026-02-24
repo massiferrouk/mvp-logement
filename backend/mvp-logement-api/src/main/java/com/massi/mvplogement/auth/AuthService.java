@@ -12,10 +12,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -33,7 +35,7 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public User login(String emailRaw, String passwordRaw) {
+    public String loginAndCreateToken(String emailRaw, String passwordRaw) {
         String email = emailRaw.trim().toLowerCase();
 
         User user = userRepository.findByEmail(email)
@@ -43,6 +45,10 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        return user;
+        return jwtService.generateToken(user.getId(), user.getEmail());
+    }
+
+    public long tokenExpiresIn() {
+        return jwtService.getExpirationSeconds();
     }
 }
