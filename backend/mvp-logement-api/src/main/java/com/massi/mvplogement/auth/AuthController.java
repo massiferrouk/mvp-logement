@@ -1,5 +1,6 @@
 package com.massi.mvplogement.auth;
 
+import com.massi.mvplogement.auth.dto.LoginResponse;
 import com.massi.mvplogement.auth.dto.RegisterRequest;
 import com.massi.mvplogement.auth.dto.LoginRequest;
 import com.massi.mvplogement.auth.dto.RegisterResponse;
@@ -27,8 +28,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public RegisterResponse login(@Valid @RequestBody LoginRequest req) {
-        User user = authService.login(req.email(), req.password());
-        return new RegisterResponse(user.getId(), user.getEmail());
+    public LoginResponse login(@Valid @RequestBody LoginRequest req) {
+        String token = authService.loginAndCreateToken(req.email(), req.password());
+        return new LoginResponse(token, authService.tokenExpiresIn());
     }
 }

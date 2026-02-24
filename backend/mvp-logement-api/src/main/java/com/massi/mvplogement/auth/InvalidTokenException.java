@@ -1,4 +1,3 @@
 package com.massi.mvplogement.auth;
 
-public class InvalidTokenException {
-}
+public class InvalidTokenException extends RuntimeException {}
