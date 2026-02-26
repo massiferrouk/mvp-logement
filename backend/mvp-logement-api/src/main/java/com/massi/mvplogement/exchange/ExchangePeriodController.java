@@ -2,6 +2,7 @@ package com.massi.mvplogement.exchange;
 
 import com.massi.mvplogement.exchange.dto.CreateExchangePeriodRequest;
 import com.massi.mvplogement.exchange.dto.ExchangePeriodResponse;
+import com.massi.mvplogement.exchange.dto.MatchResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -48,5 +49,23 @@ public class ExchangePeriodController {
                 p.getStatus(),
                 p.getCreatedAt()
         );
+    }
+
+    @GetMapping("/{id}/matches")
+    public List<MatchResponse> matches(@PathVariable Long id, Authentication auth) {
+        String email = auth.getName();
+
+        return repository.findMatchesForPeriod(id, email).stream()
+                .map(ep -> new MatchResponse(
+                        ep.getId(),
+                        ep.getLogement().getId(),
+                        ep.getLogement().getCity(),
+                        ep.getWantCity(),
+                        ep.getStartDate(),
+                        ep.getEndDate(),
+                        ep.getLogement().getOwner().getId(),
+                        ep.getLogement().getOwner().getEmail()
+                ))
+                .toList();
     }
 }
