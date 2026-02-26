@@ -1,5 +1,6 @@
 package com.massi.mvplogement.logement;
 
+import com.massi.mvplogement.common.NotFoundException;
 import com.massi.mvplogement.logement.dto.CreateLogementRequest;
 import com.massi.mvplogement.logement.dto.LogementResponse;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class LogementController {
     // ✅ PUBLIC
     @GetMapping
     public List<LogementResponse> list() {
-        return logementRepository.findAll().stream()
+        return logementRepository.findAllWithOwner().stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -36,8 +37,8 @@ public class LogementController {
     // ✅ PUBLIC
     @GetMapping("/{id}")
     public LogementResponse get(@PathVariable Long id) {
-        Logement l = logementRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Logement not found"));
+        Logement l = logementRepository.findByIdWithOwner(id)
+                .orElseThrow(() -> new NotFoundException("Logement not found"));
         return toResponse(l);
     }
 

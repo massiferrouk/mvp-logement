@@ -47,8 +47,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
                 // (Plus tard, on mettra userId dans un principal custom)
-            } catch (InvalidTokenException ignored) {
-                // Token invalide -> on laisse Security bloquer plus loin (401)
+            } catch (Exception e) {
+                System.out.println("JWT ERROR on " + request.getMethod() + " " + request.getRequestURI()
+                        + " -> " + e.getClass().getSimpleName() + " : " + e.getMessage());
             }
         }
 
