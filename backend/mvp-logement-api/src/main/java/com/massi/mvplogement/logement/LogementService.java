@@ -31,13 +31,12 @@ public class LogementService {
         User owner = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found in DB"));
 
-        Logement l = new Logement();
-        l.setOwner(owner);
-        l.setTitle(req.title());
-        l.setCity(req.city());
-        l.setDescription(req.description());
+        Logement logement = LogementBuilder
+                .forOwner(owner)
+                .fromCreateRequest(req)
+                .build();
 
-        return logementRepository.save(l);
+        return logementRepository.save(logement);
     }
 
     @Transactional
@@ -50,11 +49,15 @@ public class LogementService {
             throw new ForbiddenException("You are not the owner of this logement");
         }
 
-        logement.setTitle(req.title());
-        logement.setCity(req.city());
-        logement.setDescription(req.description());
+        Logement updated = LogementBuilder
+                .forOwner(logement.getOwner())
+                .applyUpdate(req)
+                .build();
 
-        return logementRepository.save(logement);
+        // On garde l'identifiant existant
+        updated.setId(logement.getId());
+
+        return logementRepository.save(updated);
     }
 
     @Transactional
