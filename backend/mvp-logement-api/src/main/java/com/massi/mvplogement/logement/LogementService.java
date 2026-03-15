@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.massi.mvplogement.common.ForbiddenException;
 import com.massi.mvplogement.common.NotFoundException;
 import com.massi.mvplogement.logement.dto.UpdateLogementRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LogementService {
@@ -25,7 +24,6 @@ public class LogementService {
 
     @Transactional
     public Logement create(CreateLogementRequest req, Authentication auth) {
-        // Dans ton JwtAuthFilter, auth.getName() = email
         String email = auth.getName();
 
         User owner = userRepository.findByEmail(email)
@@ -54,7 +52,6 @@ public class LogementService {
                 .applyUpdate(req)
                 .build();
 
-        // On garde l'identifiant existant
         updated.setId(logement.getId());
 
         return logementRepository.save(updated);

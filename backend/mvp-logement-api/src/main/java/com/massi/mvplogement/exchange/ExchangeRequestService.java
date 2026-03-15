@@ -42,27 +42,22 @@ public class ExchangeRequestService {
         ExchangePeriod to = periodRepo.findById(req.toPeriodId())
                 .orElseThrow(() -> new NotFoundException("toPeriod not found"));
 
-        // owner-only: je peux envoyer seulement depuis MA période (owner du logement de from)
         if (!from.getLogement().getOwner().getEmail().equals(email)) {
             throw new ForbiddenException("You are not the owner of fromPeriod");
         }
 
-        // pas à soi-même
         if (to.getLogement().getOwner().getEmail().equals(email)) {
             throw new BadRequestException("You cannot request an exchange with yourself");
         }
 
-        // status open
         if (!"OPEN".equals(from.getStatus()) || !"OPEN".equals(to.getStatus())) {
             throw new BadRequestException("Both periods must be OPEN");
         }
 
-        // Optionnel mais logique MVP : vérifier que c'est bien un match (ville inversée + overlap)
         if (!matchStrategy.isMatch(from, to)) {
             throw new BadRequestException("Periods are not compatible (no match)");
         }
 
-        // pas de doublon
         if (requestRepo.existsByFromPeriod_IdAndToPeriod_Id(req.fromPeriodId(), req.toPeriodId())) {
             throw new BadRequestException("Request already exists");
         }
@@ -82,7 +77,6 @@ public class ExchangeRequestService {
         ExchangeRequest er = requestRepo.findByIdFull(requestId)
                 .orElseThrow(() -> new NotFoundException("Exchange request not found"));
 
-        // seul le destinataire (owner du logement de toPeriod) peut accepter
         if (!er.getToPeriod().getLogement().getOwner().getEmail().equals(email)) {
             throw new ForbiddenException("You are not allowed to accept this request");
         }
@@ -97,11 +91,10 @@ public class ExchangeRequestService {
         conversation.setExchangeRequest(er);
         conversationRepository.save(conversation);
 
-        // MVP simple : on peut fermer les périodes pour éviter d'autres échanges
         er.getFromPeriod().setStatus("CLOSED");
         er.getToPeriod().setStatus("CLOSED");
 
-        return er; // transaction + dirty checking
+        return er;
     }
 
     @Transactional

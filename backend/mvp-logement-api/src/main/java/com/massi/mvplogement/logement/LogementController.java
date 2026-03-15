@@ -9,8 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.massi.mvplogement.logement.dto.UpdateLogementRequest;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -26,7 +24,6 @@ public class LogementController {
         this.logementService = logementService;
     }
 
-    // ✅ PUBLIC
     @GetMapping
     public List<LogementResponse> list() {
         return logementRepository.findAllWithOwner().stream()
@@ -34,7 +31,6 @@ public class LogementController {
                 .toList();
     }
 
-    // ✅ PUBLIC
     @GetMapping("/{id}")
     public LogementResponse get(@PathVariable Long id) {
         Logement l = logementRepository.findByIdWithOwner(id)
@@ -42,7 +38,6 @@ public class LogementController {
         return toResponse(l);
     }
 
-    // 🔐 PROTECTED (JWT)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LogementResponse create(@Valid @RequestBody CreateLogementRequest req, Authentication auth) {
@@ -51,8 +46,6 @@ public class LogementController {
     }
 
     private LogementResponse toResponse(Logement l) {
-        // Attention LAZY: on lit owner seulement ici (ça peut marcher car transaction ouverte sur findAll)
-        // Pour MVP c’est OK. On optimisera plus tard si besoin.
         return new LogementResponse(
                 l.getId(),
                 l.getTitle(),

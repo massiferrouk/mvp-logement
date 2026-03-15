@@ -28,12 +28,10 @@ public class ExchangePeriodService {
         Logement logement = logementRepository.findById(req.logementId())
                 .orElseThrow(() -> new NotFoundException("Logement not found"));
 
-        // owner-only
         if (!logement.getOwner().getEmail().equals(email)) {
             throw new ForbiddenException("You are not the owner of this logement");
         }
 
-        // check dates (en plus du CHECK SQL)
         if (req.startDate().isAfter(req.endDate())) {
             throw new BadRequestException("startDate must be <= endDate");
         }

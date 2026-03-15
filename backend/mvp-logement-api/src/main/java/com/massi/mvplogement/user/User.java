@@ -23,7 +23,7 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    protected User() { } // JPA
+    protected User() { }
 
     public User(String email, String passwordHash) {
         this.email = email;

@@ -42,7 +42,7 @@ public class ExchangePeriodController {
         return new ExchangePeriodResponse(
                 p.getId(),
                 p.getLogement().getId(),
-                p.getLogement().getCity(), // haveCity
+                p.getLogement().getCity(),
                 p.getWantCity(),
                 p.getStartDate(),
                 p.getEndDate(),

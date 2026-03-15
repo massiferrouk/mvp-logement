@@ -14,7 +14,6 @@ public class ExchangePeriod {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // FK -> logements.id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "logement_id", nullable = false)
     private Logement logement;

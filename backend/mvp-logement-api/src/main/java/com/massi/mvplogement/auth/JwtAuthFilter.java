@@ -36,8 +36,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 Jws<Claims> jws = jwtService.parseToken(token);
                 Claims claims = jws.getPayload();
-
-                String userId = claims.getSubject(); // sub=userId
                 String email = claims.get("email", String.class);
 
                 var auth = new UsernamePasswordAuthenticationToken(
@@ -45,8 +43,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
-
-                // (Plus tard, on mettra userId dans un principal custom)
             } catch (Exception e) {
                 System.out.println("JWT ERROR on " + request.getMethod() + " " + request.getRequestURI()
                         + " -> " + e.getClass().getSimpleName() + " : " + e.getMessage());
