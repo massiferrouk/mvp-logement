@@ -4,6 +4,8 @@ import com.massi.mvplogement.common.BadRequestException;
 import com.massi.mvplogement.common.ForbiddenException;
 import com.massi.mvplogement.common.NotFoundException;
 import com.massi.mvplogement.exchange.dto.CreateExchangeRequestRequest;
+import com.massi.mvplogement.messaging.Conversation;
+import com.massi.mvplogement.messaging.ConversationRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +15,12 @@ public class ExchangeRequestService {
 
     private final ExchangeRequestRepository requestRepo;
     private final ExchangePeriodRepository periodRepo;
+    private final ConversationRepository conversationRepository;
 
-    public ExchangeRequestService(ExchangeRequestRepository requestRepo, ExchangePeriodRepository periodRepo) {
+    public ExchangeRequestService(ExchangeRequestRepository requestRepo, ExchangePeriodRepository periodRepo, ConversationRepository conversationRepository) {
         this.requestRepo = requestRepo;
         this.periodRepo = periodRepo;
+        this.conversationRepository = conversationRepository;
     }
 
     @Transactional
@@ -90,6 +94,10 @@ public class ExchangeRequestService {
         }
 
         er.setStatus("ACCEPTED");
+
+        Conversation conversation = new Conversation();
+        conversation.setExchangeRequest(er);
+        conversationRepository.save(conversation);
 
         // MVP simple : on peut fermer les périodes pour éviter d'autres échanges
         er.getFromPeriod().setStatus("CLOSED");
