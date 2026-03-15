@@ -40,11 +40,11 @@ public class JwtService {
 
         return Jwts.builder()
                 .issuer(issuer)
-                .subject(String.valueOf(userId))          // subject = userId
+                .subject(String.valueOf(userId))
                 .claim("email", email)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
-                .signWith(key)                            // HMAC-SHA key auto
+                .signWith(key)
                 .compact();
     }
 

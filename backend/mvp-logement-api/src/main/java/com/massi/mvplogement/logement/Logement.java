@@ -12,7 +12,6 @@ public class Logement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // colonne SQL = user_id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User owner;
@@ -34,7 +33,6 @@ public class Logement {
         if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
-    // getters/setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public User getOwner() { return owner; }
