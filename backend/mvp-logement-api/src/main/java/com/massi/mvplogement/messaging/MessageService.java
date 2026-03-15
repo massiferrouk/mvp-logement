@@ -3,6 +3,7 @@ package com.massi.mvplogement.messaging;
 import com.massi.mvplogement.messaging.dto.MessageResponse;
 import com.massi.mvplogement.user.User;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,14 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final ConversationService conversationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public MessageService(MessageRepository messageRepository,
-                          ConversationService conversationService) {
+                          ConversationService conversationService,
+                          ApplicationEventPublisher eventPublisher) {
         this.messageRepository = messageRepository;
         this.conversationService = conversationService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -56,6 +60,9 @@ public class MessageService {
         msg.setContent(content);
 
         Message saved = messageRepository.save(msg);
+
+        // Publication d'un événement domaine quand un message est envoyé
+        eventPublisher.publishEvent(new com.massi.mvplogement.messaging.events.MessageSentEvent(this, saved));
 
         return new MessageResponse(
                 saved.getId(),

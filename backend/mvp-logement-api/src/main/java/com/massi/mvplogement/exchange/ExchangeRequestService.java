@@ -6,6 +6,7 @@ import com.massi.mvplogement.common.NotFoundException;
 import com.massi.mvplogement.exchange.dto.CreateExchangeRequestRequest;
 import com.massi.mvplogement.messaging.Conversation;
 import com.massi.mvplogement.messaging.ConversationRepository;
+import com.massi.mvplogement.exchange.matching.MatchStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +17,16 @@ public class ExchangeRequestService {
     private final ExchangeRequestRepository requestRepo;
     private final ExchangePeriodRepository periodRepo;
     private final ConversationRepository conversationRepository;
+    private final MatchStrategy matchStrategy;
 
-    public ExchangeRequestService(ExchangeRequestRepository requestRepo, ExchangePeriodRepository periodRepo, ConversationRepository conversationRepository) {
+    public ExchangeRequestService(ExchangeRequestRepository requestRepo,
+                                  ExchangePeriodRepository periodRepo,
+                                  ConversationRepository conversationRepository,
+                                  MatchStrategy matchStrategy) {
         this.requestRepo = requestRepo;
         this.periodRepo = periodRepo;
         this.conversationRepository = conversationRepository;
+        this.matchStrategy = matchStrategy;
     }
 
     @Transactional
@@ -52,15 +58,7 @@ public class ExchangeRequestService {
         }
 
         // Optionnel mais logique MVP : vérifier que c'est bien un match (ville inversée + overlap)
-        boolean citiesOk =
-                normalize(to.getLogement().getCity()).equals(normalize(from.getWantCity()))
-                        && normalize(to.getWantCity()).equals(normalize(from.getLogement().getCity()));
-
-        boolean overlapOk =
-                !from.getStartDate().isAfter(to.getEndDate())
-                        && !to.getStartDate().isAfter(from.getEndDate());
-
-        if (!citiesOk || !overlapOk) {
+        if (!matchStrategy.isMatch(from, to)) {
             throw new BadRequestException("Periods are not compatible (no match)");
         }
 
@@ -125,7 +123,4 @@ public class ExchangeRequestService {
         return er;
     }
 
-    private String normalize(String s) {
-        return s == null ? "" : s.trim().toLowerCase();
-    }
 }
