@@ -1,7 +1,9 @@
 package com.massi.mvplogement.exchange.matching;
 
 import com.massi.mvplogement.exchange.ExchangePeriod;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DefaultMatchStrategy implements MatchStrategy {
 
     @Override

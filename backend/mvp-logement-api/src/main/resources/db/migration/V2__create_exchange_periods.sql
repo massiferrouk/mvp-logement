@@ -1,4 +1,4 @@
-CREATE TABLE exchange_periods (
+CREATE TABLE IF NOT EXISTS exchange_periods (
                                   id BIGSERIAL PRIMARY KEY,
                                   logement_id BIGINT NOT NULL REFERENCES logements(id) ON DELETE CASCADE,
 
@@ -15,6 +15,6 @@ CREATE TABLE exchange_periods (
                                   CONSTRAINT chk_exchange_dates CHECK (start_date <= end_date)
 );
 
-CREATE INDEX idx_exchange_periods_logement_id ON exchange_periods(logement_id);
-CREATE INDEX idx_exchange_periods_want_city ON exchange_periods(want_city);
-CREATE INDEX idx_exchange_periods_date_range ON exchange_periods(start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_exchange_periods_logement_id ON exchange_periods(logement_id);
+CREATE INDEX IF NOT EXISTS idx_exchange_periods_want_city ON exchange_periods(want_city);
+CREATE INDEX IF NOT EXISTS idx_exchange_periods_date_range ON exchange_periods(start_date, end_date);

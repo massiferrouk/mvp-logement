@@ -1,4 +1,4 @@
-CREATE TABLE exchange_requests (
+CREATE TABLE IF NOT EXISTS exchange_requests (
                                    id BIGSERIAL PRIMARY KEY,
 
                                    from_period_id BIGINT NOT NULL REFERENCES exchange_periods(id) ON DELETE CASCADE,
@@ -13,6 +13,6 @@ CREATE TABLE exchange_requests (
                                    CONSTRAINT chk_exchange_request_status CHECK (status IN ('PENDING','ACCEPTED','REJECTED','CANCELED'))
 );
 
-CREATE INDEX idx_exchange_requests_from_period ON exchange_requests(from_period_id);
-CREATE INDEX idx_exchange_requests_to_period ON exchange_requests(to_period_id);
-CREATE INDEX idx_exchange_requests_status ON exchange_requests(status);
+CREATE INDEX IF NOT EXISTS idx_exchange_requests_from_period ON exchange_requests(from_period_id);
+CREATE INDEX IF NOT EXISTS idx_exchange_requests_to_period ON exchange_requests(to_period_id);
+CREATE INDEX IF NOT EXISTS idx_exchange_requests_status ON exchange_requests(status);

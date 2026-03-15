@@ -1,4 +1,4 @@
-CREATE TABLE conversations (
+CREATE TABLE IF NOT EXISTS conversations (
                                id BIGSERIAL PRIMARY KEY,
                                exchange_request_id BIGINT UNIQUE NOT NULL,
                                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -9,7 +9,7 @@ CREATE TABLE conversations (
                                        ON DELETE CASCADE
 );
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
                           id BIGSERIAL PRIMARY KEY,
                           conversation_id BIGINT NOT NULL,
                           sender_id BIGINT NOT NULL,
@@ -27,14 +27,14 @@ CREATE TABLE messages (
                                   ON DELETE CASCADE
 );
 
-CREATE INDEX idx_conversations_exchange_request_id
+CREATE INDEX IF NOT EXISTS idx_conversations_exchange_request_id
     ON conversations(exchange_request_id);
 
-CREATE INDEX idx_messages_conversation_id
+CREATE INDEX IF NOT EXISTS idx_messages_conversation_id
     ON messages(conversation_id);
 
-CREATE INDEX idx_messages_sender_id
+CREATE INDEX IF NOT EXISTS idx_messages_sender_id
     ON messages(sender_id);
 
-CREATE INDEX idx_messages_created_at
+CREATE INDEX IF NOT EXISTS idx_messages_created_at
     ON messages(created_at);
