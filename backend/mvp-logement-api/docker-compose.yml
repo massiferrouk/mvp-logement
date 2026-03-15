@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  db:
+    image: postgres:16
+    container_name: alternup-db
+    environment:
+      POSTGRES_DB: alternup
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: projetrncp
+    ports:
+      - "5433:5433"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: alternup-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/alternup
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: projetrncp
+
+  test:
+    build: .
+    container_name: alternup-test
+    depends_on:
+      - db
+    command: ./mvnw test
+    profiles:
+      - test
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/alternup
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: projetrncp
+
+volumes:
+  postgres_data:

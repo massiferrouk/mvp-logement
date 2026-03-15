@@ -35,9 +35,20 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // endpoints publics
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/error").permitAll()
+
+                        // swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        // endpoints publics métier
                         .requestMatchers(HttpMethod.GET, "/logements/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
 
